@@ -1,3 +1,4 @@
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -40,15 +41,41 @@ public class Store {
     }
 
     public static void main(String[] args) {
-        HashMap<String, Double> food = addFood();
-        System.out.println(food);
-        System.out.println("Для начала покупок введите название товара, или \"end\" для отмены.");
-        double sum = makePurchases(food);
-        if(sum > 1000) {
-            System.out.printf("Сумма: %.2fруб. Скидка 1%%\n" , sum);
-            sum = sum / 100 * 99;
+//        HashMap<String, Double> food = addFood();
+//        System.out.println(food);
+//        System.out.println("Для начала покупок введите название товара, или \"end\" для отмены.");
+//        double sum = makePurchases(food);
+//        if(sum > 1000) {
+//            System.out.printf("Сумма: %.2fруб. Скидка 1%%\n" , sum);
+//            sum = sum / 100 * 99;
+//
+//        }
+//        System.out.printf("Итого к оплате: %.2fруб." , sum);
 
+        String dbURL = "jdbc:postgresql://localhost/groceryStoreDataBase";
+        String user = "postgres";
+        String pass = "postgre";
+        try {
+            Connection conn = DriverManager.getConnection(dbURL, user, pass);
+            System.out.println("Connection to Postgres server ");
+
+            String sql = "SELECT * FROM drinks";
+
+            Statement statement = conn.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+
+            while (result.next()){
+                int id = result.getInt("id");
+                String beverage = result.getString("beverage");
+                int price = result.getInt("price");
+
+                System.out.printf("%d - %s - %d\n", id, beverage, price);
+            }
+
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error to connection Postgres server ");
+            e.printStackTrace();
         }
-        System.out.printf("Итого к оплате: %.2fруб." , sum);
     }
 }
